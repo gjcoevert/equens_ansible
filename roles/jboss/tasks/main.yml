@@ -1,0 +1,62 @@
+---
+- name: Create vg_common Volume Group
+  lvg:
+    vg: vg_common
+    pvs: /dev/sdb
+    pesize: 5120
+
+- name: Create logical volume jboss
+  lvol:
+   vg: vg_common
+   lv: jboss
+   size: 5120
+
+- name: Create logical volume gpays
+  lvol:
+   vg: vg_common
+   lv: gpays
+   size: 1024
+
+- name: Create directory /opt/gpays
+  file:
+   path: /opt/gpays
+   state: directory
+   owner: root
+   group: root
+   mode: "u+rw,g-wx,o-rwx"
+
+- name: Create directory /home/jboss
+  file:
+   path: /home/jboss
+   state: directory
+   owner: root
+   group: root
+   mode: "u+rw,g-wx,o-rwx"
+
+- name: Create a ext4 filesystem on /dev/vg_common/gpays
+  filesystem:
+    fstype: ext4
+    dev: /dev/vg_common/gpays
+
+- name: Create a ext4 filesystem on /dev/vg_common/jboss
+  filesystem:
+    fstype: ext4
+    dev: /dev/vg_common/jboss
+
+- name: Mount gpays logical volume on /opt/gpays
+  mount:
+    path: /opt/gpays
+    src:  /dev/vg_common/gpays
+    fstype: ext4
+    dump: 1
+    passno: 2
+    state: mounted
+
+- name: Mount jboss logical volume on /home/jobs
+  mount:
+    path: /home/jboss
+    src:  /dev/vg_common/jboss
+    fstype: ext4
+    dump: 1
+    passno: 2
+    state: mounted

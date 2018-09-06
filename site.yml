@@ -1,0 +1,8 @@
+---
+- name: run common tasks on all hosts
+  hosts: all
+  remote_user: root
+  become: yes
+
+  roles:
+  - jboss
